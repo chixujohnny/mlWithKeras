@@ -1,5 +1,7 @@
 # coding: utf-8
 
+# 在main.py基础上增加了隐层，并使用ReLU激活
+
 from __future__ import print_function
 import numpy as np
 from keras.datasets import mnist
@@ -16,7 +18,7 @@ BATCH_SIZE = 128
 VERBOSE = 1
 NB_CLASSES = 10 # 多分类个数
 OPTIMIZER = SGD() # 优化器
-H_HIDDEN = 128 # 隐层单元个数
+N_HIDDEN = 128 # 隐层单元个数
 VALIDATION_SPLIT = 0.2 # 训练集中用作验证集的数据比例
 
 # 数据：划分训练集、测试集
@@ -37,11 +39,15 @@ y_test = np_utils.to_categorical(y_test, NB_CLASSES)
 
 # model
 model = Sequential()
-model.add(Dense(NB_CLASSES, input_shape=(RESHAPE, )))
+model.add(Dense(N_HIDDEN, input_shape=(RESHAPE, )))
+model.add(Activation('relu'))
+model.add(Dense(N_HIDDEN))
+model.add(Activation('relu'))
+model.add(Dense(NB_CLASSES))
 model.add(Activation('softmax'))
 model.summary()
 model.compile(loss='categorical_crossentropy', optimizer=OPTIMIZER, metrics=['accuracy'])
 history = model.fit(X_train, y_train, batch_size=BATCH_SIZE, epochs=NB_EPOCH, verbose=VERBOSE, validation_split=VALIDATION_SPLIT)
 score = model.evaluate(X_test, y_test, verbose=VERBOSE)
-print("Test score: ", score[0])
+print("\nTest score: ", score[0])
 print("Test accuracy: ", score[1])
